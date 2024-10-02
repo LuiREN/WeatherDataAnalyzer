@@ -24,6 +24,7 @@
   <ItemGroup>
     <Compile Include="main.py" />
     <Compile Include="scraper.py" />
+    <Compile Include="split_by_week.py" />
     <Compile Include="split_by_year.py" />
     <Compile Include="split_csv.py" />
   </ItemGroup>
