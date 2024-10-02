@@ -179,6 +179,7 @@
     <Content Include="dataset\yearly_data\samara_weather_201401-201606\20140101_20141231.csv" />
     <Content Include="dataset\yearly_data\samara_weather_201401-201606\20150101_20151231.csv" />
     <Content Include="dataset\yearly_data\samara_weather_201401-201606\20160101_20160630.csv" />
+    <Content Include="requirements.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
