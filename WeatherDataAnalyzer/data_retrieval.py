@@ -3,6 +3,9 @@ from datetime import date
 import os
 from typing import Dict, Optional, Tuple
 
+def format_date(d: date) -> str:
+    """Преобразует дату в строку формата YYYY-MM-DD."""
+    return d.strftime("%Y-%m-%d")
 
 def get_data_by_date_original(date: date, file_path: str) -> Optional[Dict[str, str]]:
     """Возвращает данные для указанной даты из оригинального CSV файла."""
@@ -11,8 +14,9 @@ def get_data_by_date_original(date: date, file_path: str) -> Optional[Dict[str, 
     row: pd.DataFrame = df[df['Дата'] == date]
     if row.empty:
         return None
-    return row.iloc[0].to_dict()
-
+    data = row.iloc[0].to_dict()
+    data['Дата'] = format_date(data['Дата'])
+    return data
 
 def get_data_by_date_split(date: date, x_file: str, y_file: str) -> Optional[Dict[str, str]]:
     """Возвращает данные для указанной даты из разделенных X.csv и Y.csv файлов."""
@@ -25,8 +29,7 @@ def get_data_by_date_split(date: date, x_file: str, y_file: str) -> Optional[Dic
         return None
 
     y_row = y_df.iloc[row_index[0]]
-    return {'Дата': date, **y_row.to_dict()}
-
+    return {'Дата': format_date(date), **y_row.to_dict()}
 
 def get_data_by_date_yearly(date: date, folder: str) -> Optional[Dict[str, str]]:
     """Возвращает данные для указанной даты из годовых файлов."""
@@ -40,8 +43,9 @@ def get_data_by_date_yearly(date: date, folder: str) -> Optional[Dict[str, str]]
     row: pd.DataFrame = df[df['Дата'] == date]
     if row.empty:
         return None
-    return row.iloc[0].to_dict()
-
+    data = row.iloc[0].to_dict()
+    data['Дата'] = format_date(data['Дата'])
+    return data
 
 def get_data_by_date_weekly(date: date, folder: str) -> Optional[Dict[str, str]]:
     """Возвращает данные для указанной даты из недельных файлов."""
@@ -56,11 +60,12 @@ def get_data_by_date_weekly(date: date, folder: str) -> Optional[Dict[str, str]]
             df['Дата'] = df['Дата'].dt.date
             row: pd.DataFrame = df[df['Дата'] == date]
             if not row.empty:
-                return row.iloc[0].to_dict()
+                data = row.iloc[0].to_dict()
+                data['Дата'] = format_date(data['Дата'])
+                return data
 
-    print(f"Данные для даты {date} не найдены.")
+    print(f"Данные для даты {format_date(date)} не найдены.")
     return None
-
 
 class WeatherIterator:
     """Итератор для перебора данных о погоде."""
@@ -74,9 +79,11 @@ class WeatherIterator:
     def __iter__(self) -> 'WeatherIterator':
         return self
 
-    def __next__(self) -> Tuple[date, Dict[str, str]]:
+    def __next__(self) -> Tuple[str, Dict[str, str]]:
         if self.index >= len(self.df):
             raise StopIteration
         row: pd.Series = self.df.iloc[self.index]
         self.index += 1
-        return row['Дата'], row.to_dict()
+        data = row.to_dict()
+        data['Дата'] = format_date(data['Дата'])
+        return data['Дата'], data

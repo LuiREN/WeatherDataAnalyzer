@@ -139,8 +139,12 @@ def main() -> None:
                 elif data_type == '4':
                     data = get_data_by_date_weekly(date, file_path)
 
-                print(f"Данные на {date_str}:")
-                print(data if data else "Данные не найдены")
+                if data:
+                    print(f"Данные на {data['Дата']}:")
+                    for key, value in data.items():
+                        print(f"{key}: {value}")
+                else:
+                    print("Данные не найдены")
             except ValueError as e:
                 print(f"Ошибка: {e}")
         elif choice == '6':
@@ -150,7 +154,10 @@ def main() -> None:
                 while True:
                     try:
                         date, data = next(iterator)
-                        print(f"Дата: {date}, Данные: {data}")
+                        print(f"Дата: {date}")
+                        for key, value in data.items():
+                            if key != 'Дата':
+                                print(f"{key}: {value}")
                         if input("Нажмите Enter для следующей записи или 'q' для выхода: ").lower() == 'q':
                             break
                     except StopIteration:
