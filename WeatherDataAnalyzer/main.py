@@ -1,51 +1,53 @@
 import os
-from typing import Optional, List, Tuple
+from typing import Optional, Tuple
 from datetime import datetime
 from scraper import WeatherScraper
 from split_csv import split_csv
 from split_by_year import split_by_year
 from split_by_week import split_by_week
 from data_retrieval import (
-    get_data_by_date_original, 
-    get_data_by_date_split, 
-    get_data_by_date_yearly, 
+    get_data_by_date_original,
+    get_data_by_date_split,
+    get_data_by_date_yearly,
     get_data_by_date_weekly,
-    get_file_list,
-    select_file,
     WeatherIterator
 )
 
+
 def get_csv_file(folder: str = 'dataset') -> Optional[str]:
+    """Запрашивает у пользователя выбор CSV файла из указанной папки."""
     if not os.path.exists(folder):
         print(f"Папка {folder} не найдена.")
         return None
 
     files = [f for f in os.listdir(folder) if f.endswith('.csv')]
-    
+
     if not files:
         print(f"В папке {folder} нет CSV файлов.")
         return None
-    
+
     print("Доступные CSV файлы:")
     for i, file in enumerate(files, 1):
         print(f"{i}. {file}")
-    
+
     while True:
         try:
             choice = int(input("Выберите номер файла для обработки: ")) - 1
             if 0 <= choice < len(files):
                 return os.path.join(folder, files[choice])
-            else:
-                print("Неверный номер. Попробуйте еще раз.")
+            print("Неверный номер. Попробуйте еще раз.")
         except ValueError:
             print("Пожалуйста, введите число.")
 
+
 def get_subfolder(base_folder: str) -> Optional[str]:
+    """Запрашивает у пользователя выбор подпапки из указанной папки."""
     if not os.path.exists(base_folder):
         print(f"Папка {base_folder} не найдена.")
         return None
 
-    subfolders = [f for f in os.listdir(base_folder) if os.path.isdir(os.path.join(base_folder, f))]
+    subfolders = [f for f in os.listdir(base_folder)
+                  if os.path.isdir(os.path.join(base_folder, f))]
     if not subfolders:
         print("Нет подпапок с файлами.")
         return None
@@ -59,12 +61,13 @@ def get_subfolder(base_folder: str) -> Optional[str]:
             choice = int(input("Выберите номер подпапки: ")) - 1
             if 0 <= choice < len(subfolders):
                 return os.path.join(base_folder, subfolders[choice])
-            else:
-                print("Неверный номер. Попробуйте еще раз.")
+            print("Неверный номер. Попробуйте еще раз.")
         except ValueError:
             print("Пожалуйста, введите число.")
 
+
 def main() -> None:
+    """Основная функция программы."""
     while True:
         print("\nМеню:")
         print("1. Запустить сбор данных")
@@ -74,9 +77,9 @@ def main() -> None:
         print("5. Получить данные по дате")
         print("6. Использовать итератор")
         print("7. Выход")
-        
+
         choice: str = input("Выберите действие: ")
-        
+
         if choice == '1':
             scraper: WeatherScraper = WeatherScraper()
             scraper.run()
@@ -95,9 +98,9 @@ def main() -> None:
             print("2. X.csv и Y.csv")
             print("3. Годовые файлы")
             print("4. Недельные файлы")
-    
+
             data_type = input("Ваш выбор: ")
-    
+
             if data_type == '1':
                 file_path = get_csv_file()
             elif data_type == '2':
@@ -126,7 +129,7 @@ def main() -> None:
             date_str = input("Введите дату в формате YYYY-MM-DD: ")
             try:
                 date = datetime.strptime(date_str, "%Y-%m-%d").date()
-                
+
                 if data_type == '1':
                     data = get_data_by_date_original(date, file_path)
                 elif data_type == '2':
@@ -135,7 +138,7 @@ def main() -> None:
                     data = get_data_by_date_yearly(date, file_path)
                 elif data_type == '4':
                     data = get_data_by_date_weekly(date, file_path)
-        
+
                 print(f"Данные на {date_str}:")
                 print(data if data else "Данные не найдены")
             except ValueError as e:
@@ -158,6 +161,7 @@ def main() -> None:
             return
         else:
             print("Неверный выбор. Попробуйте еще раз.")
+
 
 if __name__ == "__main__":
     main()
