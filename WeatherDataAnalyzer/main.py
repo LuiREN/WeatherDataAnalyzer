@@ -41,9 +41,6 @@ def get_csv_file() -> Optional[str]:
 
 
 def main() -> None:
-    """
-    Основная функция программы, реализующая меню пользователя.
-    """
     while True:
         print("\nМеню:")
         print("1. Запустить сбор данных")
@@ -51,10 +48,11 @@ def main() -> None:
         print("3. Разделить файл по годам")
         print("4. Разделить файл по неделям")
         print("5. Получить данные по дате")
-        print("6. Выход")
-
+        print("6. Использовать итератор")
+        print("7. Выход")
+        
         choice: str = input("Выберите действие: ")
-
+        
         if choice == '1':
             scraper: WeatherScraper = WeatherScraper()
             scraper.run()
@@ -78,11 +76,23 @@ def main() -> None:
                 except ValueError:
                     print("Неверный формат даты")
         elif choice == '6':
+            input_file: Optional[str] = get_csv_file()
+            if input_file:
+                iterator = WeatherIterator(input_file)
+                while True:
+                    try:
+                        date, data = next(iterator)
+                        print(f"Дата: {date}, Данные: {data}")
+                        if input("Нажмите Enter для следующей записи или 'q' для выхода: ").lower() == 'q':
+                            break
+                    except StopIteration:
+                        print("Достигнут конец данных")
+                        break
+        elif choice == '7':
             print("Выход из программы.")
             return
         else:
             print("Неверный выбор. Попробуйте еще раз.")
-
 
 if __name__ == "__main__":
     main()
